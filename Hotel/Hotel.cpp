@@ -75,7 +75,7 @@ class Customer{
 				// 检查文件是否成功打开
 				if (!outfile) {
 					std::cerr << "无法打开文件！" << std::endl;
-					return ;
+					return false;
 				}
 
 				// 向文件中追加内容
@@ -86,11 +86,11 @@ class Customer{
 				// 关闭文件
 				outfile.close();
 			}
-        if(t){
-            return true;
-        }else{
-            return false;
-        }
+            if(t){
+                return true;
+            }else{
+                return false;
+            }
 
 		}
     	
