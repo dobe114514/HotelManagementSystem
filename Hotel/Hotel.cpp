@@ -470,9 +470,27 @@ int main() {
 						if(username == a){
 							cout<<"用户名正确"<<endl;
 						}else{
-
+							cout<<"用户名错误"<<endl;
+							break;
 						}
-
+						cout<<"请输入用户名"<<endl;
+						cin>>b;
+						if(username == a){
+							cout<<"密码正确"<<endl;
+						}else{
+							cout<<"密码错误"<<endl;
+							break;
+						}
+						cout<<"请输入学号"<<endl;
+						cin>>c;
+						if(username == a){
+							cout<<"学号正确"<<endl;
+						}else{
+							cout<<"学号错误"<<endl;
+							break;
+						}
+						Customer::add("guest.txt",username,password,number);
+						cout<<"注册成功！请登录"<<endl;
 						break;
 					}
 					default:{
