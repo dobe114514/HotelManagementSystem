@@ -48,7 +48,7 @@ class Customer{
     	
     	
     	//添加用户
-		static void add(const string& filename,std::string username, std::string password,std::string number){
+		static bool add(const string& filename,std::string username, std::string password,std::string number){
 			ifstream file(filename);	        	       
 		    if (!file.is_open()) {
 	            cerr << "无法读取名单" << endl;
@@ -63,7 +63,7 @@ class Customer{
 	        	string one;string two,three;
 	        	ss>>one>>two>>three;
 	        	if(three == number){
-					cout<<"已有该用户";
+					cout<<"已有该用户"<<endl;
 					t = false;
 				}
 				
@@ -79,13 +79,18 @@ class Customer{
 				}
 
 				// 向文件中追加内容
-				outfile << username<<"   "<<password<<"  "<<number<<"  ";
+				outfile<<std::endl;
+				outfile << username<<"   "<<password<<"  "<<number<<"  "<< std::endl;
 
 
 				// 关闭文件
 				outfile.close();
 			}
-
+        if(t){
+            return true;
+        }else{
+            return false;
+        }
 
 		}
     	
@@ -415,111 +420,105 @@ class Administor{
     
 	
 	
-int main() {	  
-	//注意健壮性
-	bool t = true;
-	while(t){
-		int interact=0;
-		cout<<"1管理员登陆  2住客登录  3退出"<<endl;
-		cin>>interact;
-		switch(interact){
-			case 1:{
-				string number;
-				cout<<"输入学号"<<endl;
-				cin>>number;
-				//查找有无该管理员
-				if (Administor::readAdministorFromFile("administor.txt",number)){
-					interact = 0;
-					cout<<"1所有房间信息  2单一房间信息  3已住住客信息  4预约住客信息  5本日收入  6本月收入 7返回上一页面"<<endl;
-					cin>>interact;
-				}else{
-					cout<<"无该管理员"<<endl;
-					break;
-				}
+int main() {
+    bool t = true;  // 主循环
+    while (t) {
+        int interact = 0;
+        cout << "1管理员登陆  2住客登录  3退出" << endl;
+        cin >> interact;
 
-				break;
-			}
-			case 2:{
-				cout<<"1登陆  2注册"<<endl;
-				interact = 0;
-				cin>>interact;
-				switch(interact){
-					case 1:{
-						string number;
-						cout<<"输入学号"<<endl;
-						cin>>number;
-						if(Customer::check("guest.txt",number)){
-							cout<<"已登录"<<endl;
-							interact = 0;
-							cout<<"1查询未入住/预约房间  2退房  3取消预约"<<endl;
-							cin>>interact;
-						}else{
-							cout<<"无该用户"<<endl;
-							break;
-						}
-						break;
-					}
-					case 2:{
-						cout<<"请输入你的用户名 密码 学号（不可重复）"<<endl;
-						string username,password,number;
-						string a,b,c;
-						cin>>username>>password>>number;
-						cout<<"再次输入验证是否正确"<<endl;
-						cout<<"请输入用户名"<<endl;
-						cin>>a;
-						if(username == a){
-							cout<<"用户名正确"<<endl;
-						}else{
-							cout<<"用户名错误"<<endl;
-							break;
-						}
-						cout<<"请输入用户名"<<endl;
-						cin>>b;
-						if(username == a){
-							cout<<"密码正确"<<endl;
-						}else{
-							cout<<"密码错误"<<endl;
-							break;
-						}
-						cout<<"请输入学号"<<endl;
-						cin>>c;
-						if(username == a){
-							cout<<"学号正确"<<endl;
-						}else{
-							cout<<"学号错误"<<endl;
-							break;
-						}
-						Customer::add("guest.txt",username,password,number);
-						cout<<"注册成功！请登录"<<endl;
-						break;
-					}
-					default:{
-						cout<<"输入错误"<<endl;
-						break;
-					}
-				}
-			}
-			case 3:{
-				t =false;
-				break;
-			}
+        switch (interact) {
+            case 1: {
+                string number;
+                cout << "输入学号" << endl;
+                cin >> number;
+                // 查找是否存在该管理员
+                if (Administor::readAdministorFromFile("administor.txt", number)) {
+                    interact = 0;
+                    cout << "1所有房间信息  2单一房间信息  3已住住客信息  4预约住客信息  5本日收入  6本月收入 7返回上一页面" << endl;
+                    cin >> interact;
+                } else {
+                    cout << "无该管理员" << endl;
+                    break;
+                }
+                break;
+            }
+            case 2: {
+                cout << "1登陆  2注册" << endl;
+                cin >> interact;
+                switch (interact) {
+                    case 1: {
+                        string number;
+                        cout << "输入学号" << endl;
+                        cin >> number;
+                        if (Customer::check("guest.txt", number)) {
+                            cout << "已登录" << endl;
+                            interact = 0;
+                            cout << "1查询未入住/预约房间  2退房  3取消预约" << endl;
+                            cin >> interact;
+                        } else {
+                            cout << "无该用户" << endl;
+                            break;
+                        }
+                        break;
+                    }
+                    case 2: {
+                        cout << "请输入你的用户名 密码 学号（不可重复）" << endl;
+                        string username, password, number;
+                        string a, b, c;
+                        cin >> username >> password >> number;
+                        cout << "再次输入验证是否正确" << endl;
+                        cout << "请输入用户名" << endl;
+                        cin >> a;
+                        if (username == a) {
+                            cout << "用户名正确" << endl;
+                        } else {
+                            cout << "用户名错误" << endl;
+                            break;
+                        }
+                        cout << "请输入密码" << endl;
+                        cin >> b;
+                        if (password == b) {
+                            cout << "密码正确" << endl;
+                        } else {
+                            cout << "密码错误" << endl;
+                            break;
+                        }
+                        cout << "请输入学号" << endl;
+                        cin >> c;
+                        if (number == c) {
+                            cout << "学号正确" << endl;
+                        } else {
+                            cout << "学号错误" << endl;
+                            break;
+                        }
+                        // 注册成功，添加用户
+                        if(Customer::add("guest.txt", username, password, number)){
+                            cout << "注册成功！请登录" << endl;
+                        }else{
+                            cout<<"注册失败！"<<endl;
+                        }
+                        
+                        break;
+                    }
+                    default: {
+                        cout << "输入错误" << endl;
+                        break;
+                    }
+                }
+                break;
+            }
+            case 3: {
+                cout << "退出程序" << endl;
+                t = false;  // 设置 t 为 false，退出循环
+                break;
+            }
+            default: {
+                cout << "输入错误" << endl;
+                break;
+            }
+        }
+    }
 
-			default:{
-				cout<<"输入错误"<<endl;
-				break;
-			}
-		}
-	}
-	
-	
-	
- 
-
- 	
-
-	
-	
- 
-	
     return 0;
 }
