@@ -291,6 +291,24 @@ public:
         :RoomNumber(RoomNumber), depositMoney(depositMoney), yuyue(false), type(type), full(false), moneyPerDay(moneyPerDay), moneyPerHour(moneyPerHour),
           depositPerDay(depositPerDay), depositPerHour(depositPerHour), reservationDeposit(reservationDeposit),  totalMoney(0) {}*/
 
+    //查询是否有这个房间号
+    static bool IsRoom(string filename,string room){
+        ifstream file(filename);
+
+        if(!file.is_open()){
+            cerr<<"无法打开文件"<<endl;
+            return false;
+        }
+        string line;
+        getline(file,line);
+        while(getline(file,line)){
+            if(line.find(room) != string::npos){
+                return true;
+            }
+        }
+        return false;
+    }
+
     //退预约
     static void DEreserve(string filename,string number,string room,string type) {
         ifstream file(filename);
@@ -331,7 +349,7 @@ public:
                     if(line.find(room) == std::string::npos){
                         outfile << line << std::endl;  // 将符合条件的行写入临时文件
                     }else{
-                        outfile<<room<<"   "<<Time::getCurrentTime()<<"   "<<(type == "1"?"按日":"按时")<<std::endl;
+                        outfile<<room<<"   "<<"无"<<"   "<<"按日"<<std::endl;
                     }
                 }
 
@@ -402,6 +420,61 @@ public:
 
         
     }
+
+    //退入住
+    static void DEin(string filename,string number,string room,string type) {
+       ifstream file(filename);
+        
+
+		if(!file.is_open()){
+			cerr<<"无法打开文件"<<endl;
+			return;
+
+		}
+        bool t = false;
+		string line;
+		getline(file,line);
+		while(getline(file,line)){
+            if(line.find(room) != string::npos && line.find("无") == string::npos)
+            {   
+                t = true;
+            }
+        }
+        file.close();
+        if(t){
+                std::string line;                    // 用于存储每一行的字符串
+                std::ifstream infile(filename);    // 打开输入文件流，读取原始数据
+                std::ofstream outfile("TimeofInCOPY.txt");   // 打开输出文件流，将处理后的数据写入临时文件
+                if (!infile) {  // 检查输入文件是否成功打开
+                    std::cerr << "打开输入文件失败。" << std::endl;
+                    return ;  // 打开文件失败，退出程序
+                }
+
+                if (!outfile) {  // 检查输出文件是否成功打开
+                    std::cerr << "打开输出文件失败。" << std::endl;
+                    return ;  // 打开文件失败，退出程序
+                }
+
+                getline(infile,line);
+                outfile << line << std::endl;
+                while(getline(infile,line)){
+                    if(line.find(room) == std::string::npos){
+                        outfile << line << std::endl;  // 将符合条件的行写入临时文件
+                    }else{
+                        outfile<<room<<"   "<<"无"<<"   "<<"按日"<<std::endl;
+                    }
+                }
+
+                infile.close();  // 关闭输入文件
+                outfile.close(); // 关闭输出文件
+
+                // 删除原文件并重命名临时文件为原文件名
+                std::remove(filename.c_str());	
+                std::rename("TimeofInCOPY.txt",filename.c_str());
+            }
+
+    }
+
 
     //入住
     static void in(string filename,string number,string room,string type) {
@@ -666,19 +739,49 @@ int main() {
                                     break;
                                 }
                                 case 2:{
-                                    Room::reserve("TimeofReserve.txt",number,"601","0");
+                                    cout<<"输入你想预订的房间号与付费方式(按日输入1/按小时输入0)"<<endl;
+                                    string room,type;
+                                    cin>>room>>type;
+                                    if(!Room::IsRoom("room.txt",room)){
+                                        cout<<"无这个房间号"<<endl;
+                                        break;
+                                    }
+                                    Room::reserve("TimeofReserve.txt",number,room,type);
                                     cout<<"已预订"<<endl;
                                     
                                     break;
                                 }
                                 case 3:{
-                                    Room::in("TimeofIn.txt",number,"601","1");
+                                    cout<<"输入你想入住的房间号与付费方式(按日输入1/按小时输入0)"<<endl;
+                                    string room,type;
+                                    cin>>room>>type;
+                                    if(!Room::IsRoom("room.txt",room)){
+                                        cout<<"无这个房间号"<<endl;
+                                        break;
+                                    }
+                                    Room::in("TimeofIn.txt",number,room,type);
                                     break;
                                 }
                                 case 4:{
+                                    cout<<"输入你想退房的房间号与付费方式(按日输入1/按小时输入0)"<<endl;
+                                    string room,type;
+                                    cin>>room>>type;
+                                    if(!Room::IsRoom("room.txt",room)){
+                                        cout<<"无这个房间号"<<endl;
+                                        break;
+                                    }
+                                    Room::DEin("TimeofIn.txt",number,room,type);
                                     break;
                                 }
                                 case 5:{
+                                    cout<<"输入你想退预订的房间号与付费方式(按日输入1/按小时输入0)"<<endl;
+                                    string room,type;
+                                    cin>>room>>type;
+                                    if(!Room::IsRoom("room.txt",room)){
+                                        cout<<"无这个房间号"<<endl;
+                                        break;
+                                    }
+                                    Room::DEreserve("TimeofReserve.txt",number,room,type);
                                     break;
                                 } 
                             }
