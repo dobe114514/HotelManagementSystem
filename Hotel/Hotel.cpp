@@ -185,14 +185,22 @@ public:
         : year(t.year), month(t.month), day(t.day), hour(t.hour), minute(t.minute), second(t.second) {}
 
     // 获取当前时间
-    static Time getCurrentTime() {
+      static std::string getCurrentTime() {
         auto now = std::chrono::system_clock::now();
-        std::time_t now_time_t = std::chrono::system_clock::to_time_t(now);
-        std::tm* tm = std::localtime(&now_time_t);
-        return Time(tm->tm_year + 1900, tm->tm_mon + 1, tm->tm_mday, tm->tm_hour, tm->tm_min, tm->tm_sec);
+        auto in_time_t = std::chrono::system_clock::to_time_t(now);
+
+        // 使用 std::tm 结构体来格式化时间
+        std::tm buf;
+        localtime_s(&buf, &in_time_t);  // 在 Windows 下使用 localtime_s 安全版本（Linux 系统可用 localtime）
+
+        // 使用 stringstream 来格式化时间
+        std::stringstream ss;
+        ss << std::put_time(&buf, "%Y-%m-%d %H:%M");  // 设定格式为 YYYY-MM-DD HH:MM
+
+        return ss.str();
     }
 	
-	// 获取两个时间点之间的天数差
+	/* // 获取两个时间点之间的天数差
 	static int getDifferenceInDays(const Time& t1, const Time& t2) {
 	    std::tm tm1 = {};
 	    tm1.tm_year = t1.year - 1900;
@@ -252,7 +260,7 @@ public:
                   << std::setw(2) << std::setfill('0') << minute << ":"
                   << std::setw(2) << std::setfill('0') << second
                   << std::endl;
-    }
+    } */
 };
 
 
@@ -323,7 +331,7 @@ public:
                     if(line.find(room) == std::string::npos){
                         outfile << line << std::endl;  // 将符合条件的行写入临时文件
                     }else{
-                        outfile<<room<<"   "<<"2024/11/27"<<"   "<<(type == "1"?"按日":"按时")<<std::endl;
+                        outfile<<room<<"   "<<Time::getCurrentTime()<<"   "<<(type == "1"?"按日":"按时")<<std::endl;
                     }
                 }
 
