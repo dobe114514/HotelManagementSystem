@@ -284,9 +284,10 @@ public:
           depositPerDay(depositPerDay), depositPerHour(depositPerHour), reservationDeposit(reservationDeposit), totalMoney(0) {}
 
     //预约
-    void reserve(string filename,string number,string room,bool type) {
+    static void reserve(string filename,string number,string room,string type) {
         ifstream file(filename);
-        ifstream file(filename);
+        
+
 		if(!file.is_open()){
 			cerr<<"无法打开文件"<<endl;
 			return;
@@ -296,15 +297,16 @@ public:
 		string line;
 		getline(file,line);
 		while(getline(file,line)){
-            if(line.find(number) && line.find("未"))
+            if(line.find(number) != string::npos && line.find("未") != string::npos)
             {   
                 t = true;
             }
+        }
         file.close();
         if(t){
                 std::string line;                    // 用于存储每一行的字符串
                 std::ifstream infile(filename);    // 打开输入文件流，读取原始数据
-                std::ofstream outfile("TimeofReserve.txt");   // 打开输出文件流，将处理后的数据写入临时文件
+                std::ofstream outfile("TimeofReserveCOPY.txt");   // 打开输出文件流，将处理后的数据写入临时文件
                 if (!infile) {  // 检查输入文件是否成功打开
                     std::cerr << "打开输入文件失败。" << std::endl;
                     return ;  // 打开文件失败，退出程序
@@ -321,7 +323,7 @@ public:
                     if(line.find(number) == std::string::npos){
                         outfile << line << std::endl;  // 将符合条件的行写入临时文件
                     }else{
-                        outfile<<number<<"   "<<Time::getCurrentTime()<<std::endl;
+                        outfile<<number<<"   "<<"2024/11/27"<<"   "<<(type == "1"?"按日":"按时")<<std::endl;
                     }
                 }
 
@@ -330,7 +332,7 @@ public:
 
                 // 删除原文件并重命名临时文件为原文件名
                 std::remove(filename.c_str());	
-                std::rename("TimeofReserve.txt",filename.c_str());
+                std::rename("TimeofReserveCOPY.txt",filename.c_str());
             }
 
         
@@ -339,7 +341,7 @@ public:
     // 有人入住或退房
     void inout() {
         // 计时开始，设置一个初始时间
-        if (full == false) {
+        /* if (full == false) {
             t = Time::getCurrentTime();
             full = !full;
             std::cout << "Check-in at: ";
@@ -362,7 +364,7 @@ public:
 					break;
 				}
             }
-        }
+        } */
     }
 
 
@@ -522,8 +524,12 @@ int main() {
     while (t) {
         int interact = 0;
         cout << "1管理员登陆  2住客登录  3退出" << endl;
-        cin >> interact;
-
+        if (std::cin >> interact) {
+        } else {
+            
+            std::cin.clear(); // 清除错误标志
+            std::cin.ignore(numeric_limits<streamsize>::max(), '\n'); // 忽略当前输入行
+        }
         switch (interact) {
             case 1: {
                 string number;
@@ -552,9 +558,31 @@ int main() {
                         if (Customer::check("guest.txt", number)) {
                             cout << "已登录" << endl;
                             interact = 0;
-                            cout << "1查询未入住/预约房间  2退房  3取消预约" << endl;
+                            cout << "1查询未入住/预约房间 2预订 3入住 4退房  5取消预约" << endl;
                             cin >> interact;
-                        } else {
+                            switch(interact){
+                                case 1:{
+                                    
+                                    break;
+                                }
+                                case 2:{
+                                    Room::reserve("TimeofReserve.txt",number,"601","0");
+                                    cout<<"已预订"<<endl;
+                                    
+                                    break;
+                                }
+                                case 3:{
+                                    
+                                    break;
+                                }
+                                case 4:{
+                                    break;
+                                }
+                                case 5:{
+                                    break;
+                                } 
+                            }
+                        }else {
                             cout << "无该用户" << endl;
                             break;
                         }
