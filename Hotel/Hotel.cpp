@@ -200,6 +200,23 @@ public:
         return ss.str();
     }
 	
+    static int getDifferenceInDays(string filename,string number,string room){
+        ifstream file(filename);
+        if(!file.is_open()){
+            cerr<<"无法打开文件"<<endl;
+            return 0;
+        }
+
+        string line;
+        getline(file,line);
+        while(getline(file,line)){
+            if(line.find(room) != string::npos&&line.find(number) != string::npos){
+
+            }
+        }
+    }
+
+
 	/* // 获取两个时间点之间的天数差
 	static int getDifferenceInDays(const Time& t1, const Time& t2) {
 	    std::tm tm1 = {};
@@ -323,7 +340,7 @@ public:
 		string line;
 		getline(file,line);
 		while(getline(file,line)){
-            if(line.find(room) != string::npos && line.find("无") == string::npos)
+            if(line.find(room) != string::npos && line.find("无") == string::npos &&line.find(number) != string::npos)
             {   
                 t = true;
             }
@@ -349,7 +366,7 @@ public:
                     if(line.find(room) == std::string::npos){
                         outfile << line << std::endl;  // 将符合条件的行写入临时文件
                     }else{
-                        outfile<<room<<"   "<<"无"<<"   "<<"按日"<<std::endl;
+                        outfile<<room<<"   "<<"无"<<"   "<<"按日"<<"   "<<"无"<<std::endl;
                     }
                 }
 
@@ -380,7 +397,7 @@ public:
 		string line;
 		getline(file,line);
 		while(getline(file,line)){
-            if(line.find(room) != string::npos && line.find("无") != string::npos)
+            if(line.find(room) != string::npos && line.find("无") != string::npos  )
             {   
                 t = true;
             }
@@ -406,7 +423,7 @@ public:
                     if(line.find(room) == std::string::npos){
                         outfile << line << std::endl;  // 将符合条件的行写入临时文件
                     }else{
-                        outfile<<room<<"   "<<Time::getCurrentTime()<<"   "<<(type == "1"?"按日":"按时")<<std::endl;
+                        outfile<<room<<"   "<<Time::getCurrentTime()<<"   "<<(type == "1"?"按日":"按时")<<"   "<<number<<"   "<<"0"<<std::endl;
                     }
                 }
 
@@ -435,7 +452,7 @@ public:
 		string line;
 		getline(file,line);
 		while(getline(file,line)){
-            if(line.find(room) != string::npos && line.find("无") == string::npos)
+            if(line.find(room) != string::npos && line.find("无") == string::npos && line.find(number) != string::npos)
             {   
                 t = true;
             }
@@ -461,7 +478,7 @@ public:
                     if(line.find(room) == std::string::npos){
                         outfile << line << std::endl;  // 将符合条件的行写入临时文件
                     }else{
-                        outfile<<room<<"   "<<"无"<<"   "<<"按日"<<std::endl;
+                        outfile<<room<<"   "<<"无"<<"   "<<"按日"<<"   "<<"无"<<std::endl;
                     }
                 }
 
@@ -516,7 +533,7 @@ public:
                     if(line.find(room) == std::string::npos){
                         outfile << line << std::endl;  // 将符合条件的行写入临时文件
                     }else{
-                        outfile<<room<<"   "<<Time::getCurrentTime()<<"   "<<(type == "1"?"按日":"按时")<<std::endl;
+                        outfile<<room<<"   "<<Time::getCurrentTime()<<"   "<<(type == "1"?"按日":"按时")<<"   "<<number<<"   "<<"0"<<std::endl;
                     }
                 }
 
@@ -746,6 +763,10 @@ int main() {
                                         cout<<"无这个房间号"<<endl;
                                         break;
                                     }
+                                    if(type != "0" && type != "1"){
+                                        cout<<"输入错误"<<endl;
+                                        break;
+                                    }
                                     Room::reserve("TimeofReserve.txt",number,room,type);
                                     cout<<"已预订"<<endl;
                                     
@@ -759,6 +780,10 @@ int main() {
                                         cout<<"无这个房间号"<<endl;
                                         break;
                                     }
+                                    if(type != "0" && type != "1"){
+                                        cout<<"输入错误"<<endl;
+                                        break;
+                                    }
                                     Room::in("TimeofIn.txt",number,room,type);
                                     break;
                                 }
@@ -770,6 +795,10 @@ int main() {
                                         cout<<"无这个房间号"<<endl;
                                         break;
                                     }
+                                    if(type != "0" && type != "1"){
+                                        cout<<"输入错误"<<endl;
+                                        break;
+                                    }
                                     Room::DEin("TimeofIn.txt",number,room,type);
                                     break;
                                 }
@@ -779,6 +808,10 @@ int main() {
                                     cin>>room>>type;
                                     if(!Room::IsRoom("room.txt",room)){
                                         cout<<"无这个房间号"<<endl;
+                                        break;
+                                    }
+                                    if(type != "0" && type != "1"){
+                                        cout<<"输入错误"<<endl;
                                         break;
                                     }
                                     Room::DEreserve("TimeofReserve.txt",number,room,type);
