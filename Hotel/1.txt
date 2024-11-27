@@ -1,23 +1,54 @@
-#include <iostream>
-#include <fstream>
-#include <string>
-
-int main() {
-    // 打开文件
-    std::ifstream file("guest.txt");  // 这里的 "example.txt" 是你要读取的文件名
-
-    // 检查文件是否成功打开
-    if (!file) {
-        std::cerr << "无法打开文件!" << std::endl;
-        return 1;  // 如果文件无法打开，退出程序
+//管理员操作界面
+switch(interact){
+    case 1:{
+        //显示所有房间信息
+        Room::scanRoom("room.txt");
+        break;
     }
+    case 2:{
+        //查询某一房间
+        cout<<"请输入房间名"<<endl;
+        string number;
+        Room::checkRoom("room.txt",number);
 
-    std::string line;
-    // 逐行读取文件内容
-    while (std::getline(file, line)) {
-        std::cout << line << std::endl;  // 输出每一行内容
+        break;
     }
+    case 3:{
+        
+        break;
+    }
+    case 4:{
+        break;
+    }
+    case 5:{
+        break;
+    }
+    case 6:{
+        break;
+    }
+    case 7:{
+        break;
+    }
+}
 
-    file.close();  // 关闭文件
-    return 0;
+
+switch(interact){
+    case 1:{
+        //查询未入住/未预约房间信息
+        Room::checkRoom("room.txt");
+        break;
+    }
+    case 2:{
+        //退房
+        cout<<"请输入房间名"<<endl;
+        string number;
+        
+
+        break;
+    }
+    case 3:{
+        //取消预约
+        break;
+    }
+   
 }

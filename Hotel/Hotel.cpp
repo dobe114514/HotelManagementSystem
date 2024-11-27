@@ -10,7 +10,7 @@
 #include <utility>
 #include <fstream>
 #include <sstream>
-
+#include <algorithm>
 
 
 
@@ -325,8 +325,63 @@ public:
         }
     }
 
-	
-    //查询房间信息并输出 
+
+    //显示所有房间信息
+    static void scanRoom(string filename){
+        ifstream file(filename);
+		if(!file.is_open()){
+			cerr<<"无法打开文件"<<endl;
+			return;
+
+		}
+
+		string line;
+		getline(file,line);
+		while(getline(file,line)){
+            stringstream ss(line);
+            string one,two,three,four,five,six,seven,eight;
+            ss>>one>>two>>three>>four>>five>>six>>seven>>eight;
+            cout<<"房间号："<<one<<"  是否有人入住："<<(two=="有"?"  已入住":"未入住")<<"  押金（已有人入住）："<<three
+    <<"  押金（按日）："<<four<<"  押金（按小时）："<<five<<"  住宿费(按日):"<<six<<
+    "  住宿费（按小时):"<<seven<<"  预约状态:"<<eight<<endl;
+        }
+    }
+
+
+
+
+	//显示未预约/未入住房间
+    static void checkRoom(string filename){
+        ifstream file(filename);
+		if(!file.is_open()){
+			cerr<<"无法打开文件"<<endl;
+			return;
+
+		}
+
+		string line;
+		getline(file,line);
+		bool t = false;
+		while(getline(file,line)){
+			if(line.find("未")==std::string::npos && line.find("无")==std::string::npos){
+                stringstream ss(line);
+				string one,two,three,four,five,six,seven,eight;
+				ss>>one>>two>>three>>four>>five>>six>>seven>>eight;
+                if(two == "无" && eight == "未预约"){
+                    cout<<"房间号："<<one<<"  是否有人入住："<<(two=="有"?"  已入住":"未入住")<<"  押金（已有人入住）："<<three
+		<<"  押金（按日）："<<four<<"  押金（按小时）："<<five<<"  住宿费(按日):"<<six<<
+		"  住宿费（按小时):"<<seven<<"  预约状态:"<<eight<<endl;
+				    t = true;
+                }
+            }
+            if(!t){
+                cout<<"无空余房间"<<endl;
+            }
+        }
+    }
+
+
+    //查询房间号并输出 
     static void checkRoom(string filename, string number){
 		ifstream file(filename);
 		if(!file.is_open()){
@@ -341,12 +396,14 @@ public:
 		while(getline(file,line)){
 			if(line.find(number)!=std::string::npos){
 				stringstream ss(line);
-				string one,two,three,four,five,six,seven;
-				ss>>one>>two>>three>>four>>five>>six>>seven;
-				cout<<"房间号："<<one<<"  是否有人入住："<<(two=="有"?"  已入住":"未入住")<<"  押金（已有人入住）："<<three
+				string one,two,three,four,five,six,seven,eight;
+				ss>>one>>two>>three>>four>>five>>six>>seven>>eight;
+				if(one == number){
+                    cout<<"房间号："<<one<<"  是否有人入住："<<(two=="有"?"  已入住":"未入住")<<"  押金（已有人入住）："<<three
 		<<"  押金（按日）："<<four<<"  押金（按小时）："<<five<<"  住宿费(按日):"<<six<<
-		"  住宿费（按小时):"<<seven<<endl;
-				t = true;
+		"  住宿费（按小时):"<<seven<<"  预约状态:"<<eight<<endl;
+				    t = true;
+                }
 
 
 			}
@@ -437,6 +494,7 @@ int main() {
                     interact = 0;
                     cout << "1所有房间信息  2单一房间信息  3已住住客信息  4预约住客信息  5本日收入  6本月收入 7返回上一页面" << endl;
                     cin >> interact;
+                    Room::scanRoom("room.txt");
                 } else {
                     cout << "无该管理员" << endl;
                     break;
