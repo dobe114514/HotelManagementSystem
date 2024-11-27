@@ -10,6 +10,7 @@
 #include <utility>
 #include <fstream>
 #include <sstream>
+#include <vector>
 #include <algorithm>
 
 
@@ -283,17 +284,56 @@ public:
           depositPerDay(depositPerDay), depositPerHour(depositPerHour), reservationDeposit(reservationDeposit), totalMoney(0) {}
 
     //预约
-    void deposit() {
-        if (yuyue == true) {
-            std::cout << "已预约" << std::endl;
-            return;
-        } else {
-            if (full == false) {
-                t1 = Time::getCurrentTime();
-            } else {
-                depositMoney = reservationDeposit;
+    void reserve(string filename,string number,string room,bool type) {
+        ifstream file(filename);
+        ifstream file(filename);
+		if(!file.is_open()){
+			cerr<<"无法打开文件"<<endl;
+			return;
+
+		}
+        bool t = false;
+		string line;
+		getline(file,line);
+		while(getline(file,line)){
+            if(line.find(number) && line.find("未"))
+            {   
+                t = true;
             }
-        }
+        file.close();
+        if(t){
+                std::string line;                    // 用于存储每一行的字符串
+                std::ifstream infile(filename);    // 打开输入文件流，读取原始数据
+                std::ofstream outfile("TimeofReserve.txt");   // 打开输出文件流，将处理后的数据写入临时文件
+                if (!infile) {  // 检查输入文件是否成功打开
+                    std::cerr << "打开输入文件失败。" << std::endl;
+                    return ;  // 打开文件失败，退出程序
+                }
+
+                if (!outfile) {  // 检查输出文件是否成功打开
+                    std::cerr << "打开输出文件失败。" << std::endl;
+                    return ;  // 打开文件失败，退出程序
+                }
+
+                getline(infile,line);
+
+                while(getline(infile,line)){
+                    if(line.find(number) == std::string::npos){
+                        outfile << line << std::endl;  // 将符合条件的行写入临时文件
+                    }else{
+                        outfile<<number<<"   "<<Time::getCurrentTime()<<std::endl;
+                    }
+                }
+
+                infile.close();  // 关闭输入文件
+                outfile.close(); // 关闭输出文件
+
+                // 删除原文件并重命名临时文件为原文件名
+                std::remove(filename.c_str());	
+                std::rename("TimeofReserve.txt",filename.c_str());
+            }
+
+        
     }
 
     // 有人入住或退房
