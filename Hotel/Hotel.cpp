@@ -283,13 +283,70 @@ class Room {
     Time t; // 入住时间
 
 public:
-    Room()
+     Room()
         : depositMoney(200), yuyue(false), type(1), full(false), moneyPerDay(100), moneyPerHour(10),
           depositPerDay(50), depositPerHour(5), reservationDeposit(20), totalMoney(0) {}
 
-    Room(string RoomNumber, double depositMoney, bool yuyue, int type, double moneyPerDay, double moneyPerHour, double depositPerDay, double depositPerHour, double reservationDeposit)
+    /*Room(string RoomNumber, double depositMoney, bool yuyue, int type, double moneyPerDay, double moneyPerHour, double depositPerDay, double depositPerHour, double reservationDeposit)
         :RoomNumber(RoomNumber), depositMoney(depositMoney), yuyue(false), type(type), full(false), moneyPerDay(moneyPerDay), moneyPerHour(moneyPerHour),
-          depositPerDay(depositPerDay), depositPerHour(depositPerHour), reservationDeposit(reservationDeposit), totalMoney(0) {}
+          depositPerDay(depositPerDay), depositPerHour(depositPerHour), reservationDeposit(reservationDeposit),  totalMoney(0) {}*/
+
+    //退预约
+    static void DEreserve(string filename,string number,string room,string type) {
+        ifstream file(filename);
+        
+
+		if(!file.is_open()){
+			cerr<<"无法打开文件"<<endl;
+			return;
+
+		}
+        bool t = false;
+		string line;
+		getline(file,line);
+		while(getline(file,line)){
+            if(line.find(room) != string::npos && line.find("无") == string::npos)
+            {   
+                t = true;
+            }
+        }
+        file.close();
+        if(t){
+                std::string line;                    // 用于存储每一行的字符串
+                std::ifstream infile(filename);    // 打开输入文件流，读取原始数据
+                std::ofstream outfile("TimeofReserveCOPY.txt");   // 打开输出文件流，将处理后的数据写入临时文件
+                if (!infile) {  // 检查输入文件是否成功打开
+                    std::cerr << "打开输入文件失败。" << std::endl;
+                    return ;  // 打开文件失败，退出程序
+                }
+
+                if (!outfile) {  // 检查输出文件是否成功打开
+                    std::cerr << "打开输出文件失败。" << std::endl;
+                    return ;  // 打开文件失败，退出程序
+                }
+
+                getline(infile,line);
+                outfile << line << std::endl;
+                while(getline(infile,line)){
+                    if(line.find(room) == std::string::npos){
+                        outfile << line << std::endl;  // 将符合条件的行写入临时文件
+                    }else{
+                        outfile<<room<<"   "<<Time::getCurrentTime()<<"   "<<(type == "1"?"按日":"按时")<<std::endl;
+                    }
+                }
+
+                infile.close();  // 关闭输入文件
+                outfile.close(); // 关闭输出文件
+
+                // 删除原文件并重命名临时文件为原文件名
+                std::remove(filename.c_str());	
+                std::rename("TimeofReserveCOPY.txt",filename.c_str());
+            }
+
+        
+    }
+
+
 
     //预约
     static void reserve(string filename,string number,string room,string type) {
@@ -326,7 +383,7 @@ public:
                 }
 
                 getline(infile,line);
-
+                outfile << line << std::endl;
                 while(getline(infile,line)){
                     if(line.find(room) == std::string::npos){
                         outfile << line << std::endl;  // 将符合条件的行写入临时文件
@@ -346,33 +403,58 @@ public:
         
     }
 
-    // 有人入住或退房
-    void inout() {
-        // 计时开始，设置一个初始时间
-        /* if (full == false) {
-            t = Time::getCurrentTime();
-            full = !full;
-            std::cout << "Check-in at: ";
-            t.print(); // 输出入住时间
-        } else {
-            Time currentTime = Time::getCurrentTime();
-            std::cout << "Check-out at: ";
-            currentTime.print();
-            switch (type) {
-                case 1: {
-                    totalMoney = Time::getDifferenceInHours(t, currentTime) * moneyPerHour;
-                    std::cout << "Total Money: " << totalMoney << std::endl;
-                    full = !full;
-                    break;
-                }
-                case 2:{
-                	totalMoney = Time::getDifferenceInDays(t,currentTime) * moneyPerDay;
-                	std::cout << "Total Money: " << totalMoney << std::endl;
-                    full = !full;
-					break;
-				}
+    //入住
+    static void in(string filename,string number,string room,string type) {
+       ifstream file(filename);
+        
+
+		if(!file.is_open()){
+			cerr<<"无法打开文件"<<endl;
+			return;
+
+		}
+        bool t = false;
+		string line;
+		getline(file,line);
+		while(getline(file,line)){
+            if(line.find(room) != string::npos && line.find("无") != string::npos)
+            {   
+                t = true;
             }
-        } */
+        }
+        file.close();
+        if(t){
+                std::string line;                    // 用于存储每一行的字符串
+                std::ifstream infile(filename);    // 打开输入文件流，读取原始数据
+                std::ofstream outfile("TimeofInCOPY.txt");   // 打开输出文件流，将处理后的数据写入临时文件
+                if (!infile) {  // 检查输入文件是否成功打开
+                    std::cerr << "打开输入文件失败。" << std::endl;
+                    return ;  // 打开文件失败，退出程序
+                }
+
+                if (!outfile) {  // 检查输出文件是否成功打开
+                    std::cerr << "打开输出文件失败。" << std::endl;
+                    return ;  // 打开文件失败，退出程序
+                }
+
+                getline(infile,line);
+                outfile << line << std::endl;
+                while(getline(infile,line)){
+                    if(line.find(room) == std::string::npos){
+                        outfile << line << std::endl;  // 将符合条件的行写入临时文件
+                    }else{
+                        outfile<<room<<"   "<<Time::getCurrentTime()<<"   "<<(type == "1"?"按日":"按时")<<std::endl;
+                    }
+                }
+
+                infile.close();  // 关闭输入文件
+                outfile.close(); // 关闭输出文件
+
+                // 删除原文件并重命名临时文件为原文件名
+                std::remove(filename.c_str());	
+                std::rename("TimeofInCOPY.txt",filename.c_str());
+            }
+
     }
 
 
@@ -590,7 +672,7 @@ int main() {
                                     break;
                                 }
                                 case 3:{
-                                    
+                                    Room::in("TimeofIn.txt",number,"601","1");
                                     break;
                                 }
                                 case 4:{
