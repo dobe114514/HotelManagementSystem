@@ -297,7 +297,7 @@ public:
 		string line;
 		getline(file,line);
 		while(getline(file,line)){
-            if(line.find(number) != string::npos && line.find("未") != string::npos)
+            if(line.find(number) != string::npos && line.find("无") != string::npos)
             {   
                 t = true;
             }
@@ -549,7 +549,12 @@ int main() {
             }
             case 2: {
                 cout << "1登陆  2注册" << endl;
-                cin >> interact;
+                if (std::cin >> interact) {
+                } else {
+                    
+                    std::cin.clear(); // 清除错误标志
+                    std::cin.ignore(numeric_limits<streamsize>::max(), '\n'); // 忽略当前输入行
+                }
                 switch (interact) {
                     case 1: {
                         string number;
@@ -559,7 +564,12 @@ int main() {
                             cout << "已登录" << endl;
                             interact = 0;
                             cout << "1查询未入住/预约房间 2预订 3入住 4退房  5取消预约" << endl;
-                            cin >> interact;
+                           if (std::cin >> interact) {
+                            } else {
+                                
+                                std::cin.clear(); // 清除错误标志
+                                std::cin.ignore(numeric_limits<streamsize>::max(), '\n'); // 忽略当前输入行
+                            }
                             switch(interact){
                                 case 1:{
                                     
