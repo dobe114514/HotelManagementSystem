@@ -211,7 +211,12 @@ public:
         getline(file,line);
         while(getline(file,line)){
             if(line.find(room) != string::npos&&line.find(number) != string::npos){
-
+                stringstream ss(line);
+                string one,two,three;
+                ss>>one>>two>>three;
+                string time = two + "  " + three;
+          
+           
             }
         }
     }
@@ -366,7 +371,7 @@ public:
                     if(line.find(room) == std::string::npos){
                         outfile << line << std::endl;  // 将符合条件的行写入临时文件
                     }else{
-                        outfile<<room<<"   "<<"无"<<"   "<<"按日"<<"   "<<"无"<<std::endl;
+                        outfile<<room<<"   "<<"无"<<"   "<<"按日"<<"   "<<"无"<<"  "<<"费用"<<std::endl;
                     }
                 }
 
@@ -478,7 +483,7 @@ public:
                     if(line.find(room) == std::string::npos){
                         outfile << line << std::endl;  // 将符合条件的行写入临时文件
                     }else{
-                        outfile<<room<<"   "<<"无"<<"   "<<"按日"<<"   "<<"无"<<std::endl;
+                        outfile<<room<<"   "<<"无"<<"   "<<"按日"<<"   "<<"无"<<"  "<<"费用"<<std::endl;
                     }
                 }
 
@@ -788,7 +793,7 @@ int main() {
                                     break;
                                 }
                                 case 4:{
-                                    cout<<"输入你想退房的房间号与付费方式(按日输入1/按小时输入0)"<<endl;
+                                    cout<<"输入你想退房的房间号"<<endl;
                                     string room,type;
                                     cin>>room>>type;
                                     if(!Room::IsRoom("room.txt",room)){
@@ -803,7 +808,7 @@ int main() {
                                     break;
                                 }
                                 case 5:{
-                                    cout<<"输入你想退预订的房间号与付费方式(按日输入1/按小时输入0)"<<endl;
+                                    cout<<"输入你想退预订的房间号"<<endl;
                                     string room,type;
                                     cin>>room>>type;
                                     if(!Room::IsRoom("room.txt",room)){
