@@ -297,7 +297,7 @@ public:
 		string line;
 		getline(file,line);
 		while(getline(file,line)){
-            if(line.find(number) != string::npos && line.find("无") != string::npos)
+            if(line.find(room) != string::npos && line.find("无") != string::npos)
             {   
                 t = true;
             }
@@ -320,10 +320,10 @@ public:
                 getline(infile,line);
 
                 while(getline(infile,line)){
-                    if(line.find(number) == std::string::npos){
+                    if(line.find(room) == std::string::npos){
                         outfile << line << std::endl;  // 将符合条件的行写入临时文件
                     }else{
-                        outfile<<number<<"   "<<"2024/11/27"<<"   "<<(type == "1"?"按日":"按时")<<std::endl;
+                        outfile<<room<<"   "<<"2024/11/27"<<"   "<<(type == "1"?"按日":"按时")<<std::endl;
                     }
                 }
 
