@@ -164,6 +164,51 @@ class Customer{
 
 
 
+int Month[12] = {31,28,31,30,31,30,31,31,30,31,30,31};
+int timeTOtime(string t1,string t2){
+    stringstream ss(t1);
+    int year,month,day,hour,minute,year1,month1,day1,hour1,minute1;
+    char dash1, dash2, colon;
+    ss >> year >> dash1 >> month >> dash2 >> day >> hour >> colon >> minute;
+    stringstream sss(t2);
+    sss >> year1 >> dash1 >> month1 >> dash2 >> day1 >> hour1 >> colon >> minute1;
+    int i = year;
+    int Day = 0;
+    int Day1 = 0,Day2 = 0;
+    if(year%400 == 0 || year%4==0 ||year %100 == 0){
+        Month[1] = 29;
+    }else{
+        Month[1] = 28;
+    }
+    for(int j = month;j<=12;j++){
+        Day1 += Month[j-1];
+    }
+    Day1 -= day-1;
+    if(year1%400 == 0 || year1%4==0 ||year1 %100 == 0){
+        Month[1] = Month[1] + 1;
+    }else{
+        Month[1] = 28;
+    }
+    for(int j = month1;j<=12;j++){
+        Day2 += Month[j-1];
+    }
+    Day2 -= day1-1;
+
+    
+    while(i!=year1){
+        if(i%400 == 0 || i%4==0 ||i %100 == 0){
+            Day += 366;
+        }else{
+            Day+=365;
+        }
+        i++;
+    }
+    Day = Day + Day1 - Day2;
+    return Day;
+}
+
+
+
 
 
 
@@ -215,7 +260,9 @@ public:
                 string one,two,three;
                 ss>>one>>two>>three;
                 string time = two + "  " + three;
-          
+                return timeTOtime(time,Time::getCurrentTime());
+
+                
            
             }
         }
