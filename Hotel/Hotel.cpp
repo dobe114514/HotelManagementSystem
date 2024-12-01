@@ -204,6 +204,9 @@ int timeTOtime(string t1,string t2){
         i++;
     }
     Day = Day + Day1 - Day2;
+    if(Day == 0){
+        Day = 1;
+    }
     return Day;
 }
 
@@ -247,6 +250,9 @@ int timeTOtime1(string t1,string t2){
     }
     Day = Day + Day1 - Day2;
     int Hour = Day * 24 - hour + hour1;
+    if(Hour == 0){
+        Hour = 1;
+    }
     return Hour;
 }
 
@@ -424,6 +430,26 @@ public:
         :RoomNumber(RoomNumber), depositMoney(depositMoney), yuyue(false), type(type), full(false), moneyPerDay(moneyPerDay), moneyPerHour(moneyPerHour),
           depositPerDay(depositPerDay), depositPerHour(depositPerHour), reservationDeposit(reservationDeposit),  totalMoney(0) {}*/
 
+
+    //该房间是否已预订/入住
+    static bool isRorI(string filename,string room){
+        ifstream file(filename);
+
+        if(!file.is_open()){
+            cerr<<"无法打开文件"<<endl;
+            return false;
+        }
+        string line;
+        getline(file,line);
+        while(getline(file,line)){
+            if(line.find(room) != string::npos && line.find("无") == string::npos){
+                return true;
+            }
+        }
+        return false;
+    }
+    
+
     //查询是否有这个房间号
     static bool IsRoom(string filename,string room){
         ifstream file(filename);
@@ -441,7 +467,7 @@ public:
         }
         return false;
     }
-
+    //这个房间是这个住客的吗？
     static bool HaveGuest(string filename,string room,string number){
         ifstream file(filename);
         
@@ -477,9 +503,9 @@ public:
             {   
                 t = true;
                 stringstream ss(line);
-                string one,two,three;
-                ss>>one>>two>>three;
-                return three;
+                string one,two,three,four;
+                ss>>one>>two>>three>>four;
+                return (four == "按日"?"1":"0");
             }
         }
 
@@ -529,14 +555,14 @@ public:
                         outfile << line << std::endl;  // 将符合条件的行写入临时文件
                     }else{
                         if(type == "1"){
-                            outfile<<room<<"   "<<"无"<<"   "<<"按日"<<"   "<<"无"<<"  "<<Time::getDifferenceInDays("TimeofReserve.txt",number,room)<<std::endl;
+                            outfile<<room<<"   "<<"无"<<"   "<<"按日"<<"   "<<"无"<<"  "<<Time::getDifferenceInDays("TimeofReserve.txt",number,room)<<std::endl;       
+                        }else if(type == "0"){
+                            outfile<<room<<"   "<<"无"<<"   "<<"按时"<<"   "<<"无"<<"  "<<Time::getDifferenceInHours("TimeofReserve.txt",number,room)<<std::endl;       
                         }
-                        else if(type == "0"){
-                            outfile<<room<<"   "<<"无"<<"   "<<"按时"<<"   "<<"无"<<"  "<<Time::getDifferenceInHours("TimeofReserve.txt",number,room)<<std::endl;
                         }
-                        
                     }
-                }
+                        
+                
 
                 infile.close();  // 关闭输入文件
                 outfile.close(); // 关闭输出文件
@@ -863,7 +889,62 @@ class Administor{
 
 };
 	
-	
+//预订-》判断是否已预订，是否已入住  若已预订，已入住，则不能预订
+bool getReserve(string number,string room,string type){
+    if(Room::isRorI("TimeofReserve.txt",room)){
+        cout<<"已有人预订"<<endl;
+        return false;
+    }
+    if(Room::isRorI("TimeofIn.txt",room)){
+        cout<<"已有人入住，入住时间不确定，是否继续预订？(1:继续预订 , 2:不预订)"<<endl;
+        int interact;
+        if (std::cin >> interact) {
+        } else {
+            std::cin.clear(); // 清除错误标志
+            std::cin.ignore(numeric_limits<streamsize>::max(), '\n'); // 忽略当前输入行
+        }
+        switch(interact){
+            case 1:{
+                return true;
+                break;
+            }
+            case 2:{
+                return false;
+                break;
+            }
+            default:{
+                return false;
+                break;
+            }
+        }
+
+    }
+}
+
+
+/* 入住-》判断是否已入住-》已入住则不能入住
+                    -》未入住-》已预订-》若是本人预订，则改预订为入住
+                            -》未预订-》直接入住
+ */
+bool getIn(string number,string room,string type){
+    if(Room::isRorI("TimeofIn.txt",room)){
+        cout<<"已有住客入住"<<endl;
+        return false;
+    }else{
+        if(Room::isRorI("TimeofReserve.txt",room)){
+            if(Room::HaveGuest("TimeofReserve.txt",room,number)){
+                string type = Room::getType("TimeofReserve.txt",number,room);
+                Room::DEreserve("TimeofReserve.txt",number,room,type);
+                return true;
+            }else{
+                cout<<"已有人预订"<<endl;
+                return false;
+            }
+        }else{
+            return true;
+        }
+    }
+}	
     
 	
 	
@@ -935,8 +1016,12 @@ int main() {
                                         cout<<"输入错误"<<endl;
                                         break;
                                     }
-                                    Room::reserve("TimeofReserve.txt",number,room,type);
-                                    cout<<"已预订"<<endl;
+                                    if(getReserve(number,room,type)){
+                                        Room::reserve("TimeofReserve.txt",number,room,type);
+                                        cout<<"预订成功！"<<endl;
+                                    }
+                                    
+                                   
                                     
                                     break;
                                 }
@@ -952,7 +1037,10 @@ int main() {
                                         cout<<"输入错误"<<endl;
                                         break;
                                     }
-                                    Room::in("TimeofIn.txt",number,room,type);
+                                    if(getIn(number,room,type)){
+                                        Room::in("TimeofIn.txt",number,room,type);
+                                    }
+                                    
                                     break;
                                 }
                                 case 4:{
@@ -979,11 +1067,12 @@ int main() {
                                         cout<<"无这个房间号"<<endl;
                                         break;
                                     }
-                                    if(!Room::HaveGuest("TimeofIReserve.txt",room,number)){
+                                    if(!Room::HaveGuest("TimeofReserve.txt",room,number)){
                                         cout<<"您不是房间主人，不能退房"<<endl;
                                         break;
                                     }
                                     string type = Room::getType("TimeofReserve.txt",number,room);
+                                    cout<<type<<endl;
                                     Room::DEreserve("TimeofReserve.txt",number,room,type);
                                     break;
                                 } 
