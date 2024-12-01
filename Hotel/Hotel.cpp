@@ -12,7 +12,7 @@
 #include <sstream>
 #include <vector>
 #include <algorithm>
-
+#include <regex>
 
 
 
@@ -111,9 +111,9 @@ class Customer{
 			}
 
 			getline(infile,line);
-
+            std::regex word_regex("\\b" + number + "\\b");
 			while(getline(infile,line)){
-				if(line.find(number) == std::string::npos){
+				if(!std::regex_search(line, word_regex)){
 					outfile << line << std::endl;  // 将符合条件的行写入临时文件
 				}
 			}
@@ -149,9 +149,9 @@ class Customer{
 
 			string line;
 			getline(file,line);
-
+            std::regex word_regex("\\b" + number + "\\b");
 			while(getline(file,line)){
-				if(line.find(number) != std::string::npos){
+				if(std::regex_search(line, word_regex)){
 					return true;
 				}
 			}
@@ -301,8 +301,10 @@ public:
 
         string line;
         getline(file,line);
+        std::regex word_regex("\\b" + room + "\\b");
+        std::regex word_regex1("\\b" + number + "\\b");
         while(getline(file,line)){
-            if(line.find(room) != string::npos&&line.find(number) != string::npos){
+            if(std::regex_search(line, word_regex)&&std::regex_search(line, word_regex1)){
                 stringstream ss(line);
                 string one,two,three;
                 ss>>one>>two>>three;
@@ -324,8 +326,10 @@ public:
 
         string line;
         getline(file,line);
+        std::regex word_regex("\\b" + room + "\\b");
+        std::regex word_regex1("\\b" + number + "\\b");
         while(getline(file,line)){
-            if(line.find(room) != string::npos&&line.find(number) != string::npos){
+            if(std::regex_search(line, word_regex)&&std::regex_search(line, word_regex1)){
                 stringstream ss(line);
                 string one,two,three;
                 ss>>one>>two>>three;
@@ -441,8 +445,9 @@ public:
         }
         string line;
         getline(file,line);
+        std::regex word_regex("\\b" + room + "\\b");
         while(getline(file,line)){
-            if(line.find(room) != string::npos && line.find("无") == string::npos){
+            if(std::regex_search(line, word_regex) && line.find("无") == string::npos){
                 return true;
             }
         }
@@ -460,8 +465,9 @@ public:
         }
         string line;
         getline(file,line);
+        std::regex word_regex("\\b" + room + "\\b");
         while(getline(file,line)){
-            if(line.find(room) != string::npos){
+            if(std::regex_search(line, word_regex)){
                 return true;
             }
         }
@@ -478,8 +484,10 @@ public:
 		}
         string line;
 		getline(file,line);
+        std::regex word_regex("\\b" + room + "\\b");
+        std::regex word_regex1("\\b" + number + "\\b");
 		while(getline(file,line)){
-            if(line.find(room) != string::npos && line.find(number) != string::npos )
+            if(std::regex_search(line, word_regex) && std::regex_search(line, word_regex1) )
             {   
                 t = true;
             }
@@ -487,7 +495,7 @@ public:
         return t;
     }
 
-    //获取方式
+    //获取入住/预订方式
     static string getType(string filename,string number,string room){
         ifstream file(filename);
         
@@ -498,8 +506,10 @@ public:
 		}
         string line;
 		getline(file,line);
+        std::regex word_regex("\\b" + room + "\\b");
+        std::regex word_regex1("\\b" + number + "\\b");
 		while(getline(file,line)){
-            if(line.find(room) != string::npos && line.find(number) != string::npos)
+            if(std::regex_search(line, word_regex) && std::regex_search(line, word_regex1))
             {   
                 t = true;
                 stringstream ss(line);
@@ -524,8 +534,10 @@ public:
         bool t = false;
 		string line;
 		getline(file,line);
+        std::regex word_regex("\\b" + room + "\\b");
+        std::regex word_regex1("\\b" + number + "\\b");
 		while(getline(file,line)){
-            if(line.find(room) != string::npos && line.find("无") == string::npos &&line.find(number) != string::npos)
+            if(std::regex_search(line, word_regex) && line.find("无") == string::npos &&std::regex_search(line, word_regex1))
             {   
                 t = true;
             }
@@ -551,7 +563,7 @@ public:
                 getline(infile,line);
                 outfile << line << std::endl;
                 while(getline(infile,line)){
-                    if(line.find(room) == std::string::npos){
+                    if(std::regex_search(line, word_regex)){
                         outfile << line << std::endl;  // 将符合条件的行写入临时文件
                     }else{
                         if(type == "1"){
@@ -571,6 +583,65 @@ public:
                 std::remove(filename.c_str());	
                 std::rename("TimeofReserveCOPY.txt",filename.c_str());
             }
+        string filename1 = "room.txt";
+        ifstream file1(filename1);
+        
+
+        if(!file1.is_open()){
+            cerr<<"无法打开文件"<<endl;
+            return;
+
+        }
+        bool t1 = false;
+        string line1;
+        getline(file1,line1);
+        while(getline(file1,line1)){
+            if(std::regex_search(line, word_regex) && line1.find("已") != string::npos )
+            {   
+                t1 = true;
+            }
+        }
+        if(!t1){
+            cout<<"操作错误"<<endl;
+        }
+        file1.close();
+        if(t1){
+            std::string line1;                    // 用于存储每一行的字符串
+            std::ifstream infile1(filename1);    // 打开输入文件流，读取原始数据
+            std::ofstream outfile1("roomCOPY.txt");   // 打开输出文件流，将处理后的数据写入临时文件
+            if (!infile1) {  // 检查输入文件是否成功打开
+                std::cerr << "打开输入文件失败。" << std::endl;
+                return ;  // 打开文件失败，退出程序
+            }
+
+            if (!outfile1) {  // 检查输出文件是否成功打开
+                std::cerr << "打开输出文件失败。" << std::endl;
+                return ;  // 打开文件失败，退出程序
+            }
+
+            getline(infile1,line1);
+            outfile1 << line1 << std::endl;
+            while(getline(infile1,line1)){
+                if(std::regex_search(line, word_regex)){
+                    outfile1 << line1 << std::endl;  // 将符合条件的行写入临时文件
+                }else{
+                    stringstream ss(line1);
+                    string one,two,three,four,five,six,seven,eight;
+                    ss>>one>>two>>three>>four>>five>>six>>seven>>eight;
+                    outfile1<<one<<"   "<<two<<"   "<<three<<"   "<<four<<"  "<<five<<"  "<<six<<"   "<<seven<<"   "<<"未预约"<<std::endl;       
+                    
+                    }
+                }
+                    
+            
+
+            infile1.close();  // 关闭输入文件
+            outfile1.close(); // 关闭输出文件
+
+            // 删除原文件并重命名临时文件为原文件名
+            std::remove(filename1.c_str());	
+            std::rename("roomCOPY.txt",filename1.c_str());
+        }
 
         
     }
@@ -590,8 +661,10 @@ public:
         bool t = false;
 		string line;
 		getline(file,line);
+        std::regex word_regex("\\b" + room + "\\b");
+        std::regex word_regex1("\\b" + number + "\\b");
 		while(getline(file,line)){
-            if(line.find(room) != string::npos && line.find("无") != string::npos  )
+            if(std::regex_search(line, word_regex) && line.find("无") != string::npos  )
             {   
                 t = true;
             }
@@ -614,7 +687,7 @@ public:
                 getline(infile,line);
                 outfile << line << std::endl;
                 while(getline(infile,line)){
-                    if(line.find(room) == std::string::npos){
+                    if(std::regex_search(line, word_regex)){
                         outfile << line << std::endl;  // 将符合条件的行写入临时文件
                     }else{
                         outfile<<room<<"   "<<Time::getCurrentTime()<<"   "<<(type == "1"?"按日":"按时")<<"   "<<number<<"   "<<"0"<<std::endl;
@@ -628,9 +701,70 @@ public:
                 std::remove(filename.c_str());	
                 std::rename("TimeofReserveCOPY.txt",filename.c_str());
             }
+       string filename1 = "room.txt";
+        ifstream file1(filename1);
+        
+
+        if(!file1.is_open()){
+            cerr<<"无法打开文件"<<endl;
+            return;
+
+        }
+        bool t1 = false;
+        string line1;
+        getline(file1,line1);
+        while(getline(file1,line1)){
+            if(std::regex_search(line, word_regex) && line1.find("未") != string::npos )
+            {   
+                t1 = true;
+            }
+        }
+        if(!t1){
+            cout<<"操作错误"<<endl;
+        }
+        file1.close();
+        if(t1){
+            std::string line1;                    // 用于存储每一行的字符串
+            std::ifstream infile1(filename1);    // 打开输入文件流，读取原始数据
+            std::ofstream outfile1("roomCOPY.txt");   // 打开输出文件流，将处理后的数据写入临时文件
+            if (!infile1) {  // 检查输入文件是否成功打开
+                std::cerr << "打开输入文件失败。" << std::endl;
+                return ;  // 打开文件失败，退出程序
+            }
+
+            if (!outfile1) {  // 检查输出文件是否成功打开
+                std::cerr << "打开输出文件失败。" << std::endl;
+                return ;  // 打开文件失败，退出程序
+            }
+
+            getline(infile1,line1);
+            outfile1 << line1 << std::endl;
+            while(getline(infile1,line1)){
+                if(std::regex_search(line, word_regex)){
+                    outfile1 << line1 << std::endl;  // 将符合条件的行写入临时文件
+                }else{
+                    stringstream ss(line1);
+                    string one,two,three,four,five,six,seven,eight;
+                    ss>>one>>two>>three>>four>>five>>six>>seven>>eight;
+                    outfile1<<one<<"   "<<two<<"   "<<three<<"   "<<four<<"  "<<five<<"  "<<six<<"   "<<seven<<"   "<<"已预约"<<std::endl;       
+                    
+                    }
+                }
+                    
+            
+
+            infile1.close();  // 关闭输入文件
+            outfile1.close(); // 关闭输出文件
+
+            // 删除原文件并重命名临时文件为原文件名
+            std::remove(filename1.c_str());	
+            std::rename("roomCOPY.txt",filename1.c_str());
+        }
 
         
     }
+        
+    
 
     //退入住
     static void DEin(string filename,string number,string room,string type) {
@@ -645,8 +779,10 @@ public:
         bool t = false;
 		string line;
 		getline(file,line);
+        std::regex word_regex("\\b" + room + "\\b");
+        std::regex word_regex1("\\b" + number + "\\b");
 		while(getline(file,line)){
-            if(line.find(room) != string::npos && line.find("无") == string::npos && line.find(number) != string::npos)
+            if(std::regex_search(line, word_regex) && line.find("无") == string::npos && line.find(number) != string::npos)
             {   
                 t = true;
             }
@@ -669,7 +805,7 @@ public:
                 getline(infile,line);
                 outfile << line << std::endl;
                 while(getline(infile,line)){
-                    if(line.find(room) == std::string::npos){
+                    if(std::regex_search(line, word_regex)){
                         outfile << line << std::endl;  // 将符合条件的行写入临时文件
                     }else{
                         outfile<<room<<"   "<<"无"<<"   "<<"按日"<<"   "<<"无"<<"  "<<"费用"<<std::endl;
@@ -683,6 +819,65 @@ public:
                 std::remove(filename.c_str());	
                 std::rename("TimeofInCOPY.txt",filename.c_str());
             }
+        string filename1 = "room.txt";
+        ifstream file1(filename1);
+        
+
+        if(!file1.is_open()){
+            cerr<<"无法打开文件"<<endl;
+            return;
+
+        }
+        bool t1 = false;
+        string line1;
+        getline(file1,line1);
+        while(getline(file1,line1)){
+            if(std::regex_search(line, word_regex) && line1.find("有") != string::npos )
+            {   
+                t1 = true;
+            }
+        }
+        if(!t1){
+            cout<<"操作错误"<<endl;
+        }
+        file1.close();
+        if(t1){
+            std::string line1;                    // 用于存储每一行的字符串
+            std::ifstream infile1(filename1);    // 打开输入文件流，读取原始数据
+            std::ofstream outfile1("roomCOPY.txt");   // 打开输出文件流，将处理后的数据写入临时文件
+            if (!infile1) {  // 检查输入文件是否成功打开
+                std::cerr << "打开输入文件失败。" << std::endl;
+                return ;  // 打开文件失败，退出程序
+            }
+
+            if (!outfile1) {  // 检查输出文件是否成功打开
+                std::cerr << "打开输出文件失败。" << std::endl;
+                return ;  // 打开文件失败，退出程序
+            }
+
+            getline(infile1,line1);
+            outfile1 << line1 << std::endl;
+            while(getline(infile1,line1)){
+                if(std::regex_search(line, word_regex)){
+                    outfile1 << line1 << std::endl;  // 将符合条件的行写入临时文件
+                }else{
+                    stringstream ss(line1);
+                    string one,two,three,four,five,six,seven,eight;
+                    ss>>one>>two>>three>>four>>five>>six>>seven>>eight;
+                    outfile1<<one<<"   "<<"无"<<"   "<<three<<"   "<<four<<"  "<<five<<"  "<<six<<"   "<<seven<<"   "<<eight<<std::endl;       
+                    
+                    }
+                }
+                    
+            
+
+            infile1.close();  // 关闭输入文件
+            outfile1.close(); // 关闭输出文件
+
+            // 删除原文件并重命名临时文件为原文件名
+            std::remove(filename1.c_str());	
+            std::rename("roomCOPY.txt",filename1.c_str());
+        }
 
     }
 
@@ -700,8 +895,10 @@ public:
         bool t = false;
 		string line;
 		getline(file,line);
+        std::regex word_regex("\\b" + room + "\\b");
+        std::regex word_regex1("\\b" + number + "\\b");
 		while(getline(file,line)){
-            if(line.find(room) != string::npos && line.find("无") != string::npos)
+            if(std::regex_search(line, word_regex) && line.find("无") != string::npos)
             {   
                 t = true;
             }
@@ -724,7 +921,7 @@ public:
                 getline(infile,line);
                 outfile << line << std::endl;
                 while(getline(infile,line)){
-                    if(line.find(room) == std::string::npos){
+                    if(std::regex_search(line, word_regex)){
                         outfile << line << std::endl;  // 将符合条件的行写入临时文件
                     }else{
                         outfile<<room<<"   "<<Time::getCurrentTime()<<"   "<<(type == "1"?"按日":"按时")<<"   "<<number<<"   "<<"0"<<std::endl;
@@ -738,6 +935,65 @@ public:
                 std::remove(filename.c_str());	
                 std::rename("TimeofInCOPY.txt",filename.c_str());
             }
+        string filename1 = "room.txt";
+        ifstream file1(filename1);
+        
+
+        if(!file1.is_open()){
+            cerr<<"无法打开文件"<<endl;
+            return;
+
+        }
+        bool t1 = false;
+        string line1;
+        getline(file1,line1);
+        while(getline(file1,line1)){
+            if(std::regex_search(line, word_regex) && line1.find("无") != string::npos )
+            {   
+                t1 = true;
+            }
+        }
+        if(!t1){
+            cout<<"操作错误"<<endl;
+        }
+        file1.close();
+        if(t1){
+            std::string line1;                    // 用于存储每一行的字符串
+            std::ifstream infile1(filename1);    // 打开输入文件流，读取原始数据
+            std::ofstream outfile1("roomCOPY.txt");   // 打开输出文件流，将处理后的数据写入临时文件
+            if (!infile1) {  // 检查输入文件是否成功打开
+                std::cerr << "打开输入文件失败。" << std::endl;
+                return ;  // 打开文件失败，退出程序
+            }
+
+            if (!outfile1) {  // 检查输出文件是否成功打开
+                std::cerr << "打开输出文件失败。" << std::endl;
+                return ;  // 打开文件失败，退出程序
+            }
+
+            getline(infile1,line1);
+            outfile1 << line1 << std::endl;
+            while(getline(infile1,line1)){
+                if(std::regex_search(line, word_regex)){
+                    outfile1 << line1 << std::endl;  // 将符合条件的行写入临时文件
+                }else{
+                    stringstream ss(line1);
+                    string one,two,three,four,five,six,seven,eight;
+                    ss>>one>>two>>three>>four>>five>>six>>seven>>eight;
+                    outfile1<<one<<"   "<<"有"<<"   "<<three<<"   "<<four<<"  "<<five<<"  "<<six<<"   "<<seven<<"   "<<eight<<std::endl;       
+                    
+                    }
+                }
+                    
+            
+
+            infile1.close();  // 关闭输入文件
+            outfile1.close(); // 关闭输出文件
+
+            // 删除原文件并重命名临时文件为原文件名
+            std::remove(filename1.c_str());	
+            std::rename("roomCOPY.txt",filename1.c_str());
+        }
 
     }
 
@@ -963,13 +1219,53 @@ int main() {
             case 1: {
                 string number;
                 cout << "输入学号" << endl;
-                cin >> number;
+                if (std::cin >> number) {
+                } else {
+                    
+                    std::cin.clear(); // 清除错误标志
+                    std::cin.ignore(numeric_limits<streamsize>::max(), '\n'); // 忽略当前输入行
+                }
                 // 查找是否存在该管理员
                 if (Administor::readAdministorFromFile("administor.txt", number)) {
                     interact = 0;
                     cout << "1所有房间信息  2单一房间信息  3已住住客信息  4预约住客信息  5本日收入  6本月收入 7返回上一页面" << endl;
-                    cin >> interact;
-                    Room::scanRoom("room.txt");
+                    if (std::cin >> interact) {
+                    } else {
+                        
+                        std::cin.clear(); // 清除错误标志
+                        std::cin.ignore(numeric_limits<streamsize>::max(), '\n'); // 忽略当前输入行
+                    }
+                    switch(interact){
+                        case 1:{
+                            //显示所有房间信息
+                            Room::scanRoom("room.txt");
+                            break;
+                        }
+                        case 2:{
+                            //查询某一房间
+                            cout<<"请输入房间名"<<endl;
+                            string number;
+                            Room::checkRoom("room.txt",number);
+
+                            break;
+                        }
+                        case 3:{
+                            
+                            break;
+                        }
+                        case 4:{
+                            break;
+                        }
+                        case 5:{
+                            break;
+                        }
+                        case 6:{
+                            break;
+                        }
+                        case 7:{
+                            break;
+                        }
+                    }
                 } else {
                     cout << "无该管理员" << endl;
                     break;

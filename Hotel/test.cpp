@@ -12,6 +12,7 @@
 #include <sstream>
 #include <vector>
 #include <algorithm>
+#include <regex>
 using namespace std;
 int Month[12] = {31,28,31,30,31,30,31,31,30,31,30,31};
 int timeTOtime(string t1,string t2){
@@ -120,7 +121,14 @@ public:
 
 
 int main(){
-    
-    std::cout<<Time::getDifferenceInDays("TimeofReserve.txt","2024212329","201");
+    string filename = "room.txt";
+    ifstream file(filename);
+    string line;
+    getline(file,line);
+    getline(file,line);
+    string room = "1";
+    if(line.find(" "+room+" ")){
+        cout<<"找到了"<<endl;
+    }
     return 0;
 }

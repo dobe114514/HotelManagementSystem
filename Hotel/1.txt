@@ -52,3 +52,6 @@ switch(interact){
     }
    
 }
+std::regex word_regex("\\b" + room + "\\b");
+std::regex word_regex1("\\b" + number + "\\b");
+std::regex_search(line, word_regex)
